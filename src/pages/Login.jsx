@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { auth } from '../firebase/config'; 
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
 
 
 function Login() {
@@ -63,6 +65,9 @@ function Login() {
             />
     
             <button type="submit">Submit</button>
+            <p>
+                Don’t have an account? <Link to="/signup">Sign up</Link>
+            </p>
             </form>
         </div>
     

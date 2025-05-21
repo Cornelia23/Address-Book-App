@@ -147,3 +147,29 @@ button:focus-visible {
   font-size: 0.95em;
 }
 
+.google-signin-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: white !important;
+  color: #1a1a1a !important;
+  border: 5px solid #1a1a1a;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.google-signin-button img {
+  width: 20px;
+  height: 20px;
+}
+
+.google-signin-button:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+

@@ -286,6 +286,90 @@ button:focus-visible {
   }
 }
 
+/* Add Contact Form Styling */
+
+.add-contact-button {
+  background-color: #2762b9;
+  color: white;
+  padding: 12px 20px;
+  font-size: 1em;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 24px;
+}
+
+.add-contact-button:hover {
+  background-color: #395a80;
+}
+
+.add-contact-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.add-contact-content {
+  background: white;
+  padding: 32px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.add-contact-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.add-contact-content h2 {
+  font-size: 1.2em;
+  margin-bottom: 24px;
+  color: #2762b9;
+  flex-grow: 1;
+  min-width: 200px;
+  text-align: center;
+}
+
+.add-contact-content button {
+  padding: 8px 14px;
+  font-size: 0.9em;
+  background-color: #2762b9;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.add-contact-content button:hover {
+  background-color: #395a80;
+}
+
+.address-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.address-group input {
+  padding: 12px;
+  font-size: .8em;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 92%;
+}
+
+
+
 
 html, body, #root {
   margin: 0;

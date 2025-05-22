@@ -342,7 +342,7 @@ button:focus-visible {
 
 .add-contact-content button {
   padding: 8px 14px;
-  font-size: 0.9em;
+  font-size: .9em;
   background-color: #2762b9;
   color: white;
   border: none;
@@ -369,7 +369,115 @@ button:focus-visible {
 }
 
 
+/* Contact Display Styling */
 
+.dashboard-main {
+  display: flex;
+  gap: 24px;
+  padding: 32px 24px;
+  max-width: 1600px;
+  margin-left: 0 auto;
+  margin-right: 0 auto;
+  box-sizing: border-box;
+}
+
+.dashboard-filters {
+  width: 250px;
+  min-width: 250px;
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  height: fit-content;
+}
+
+.dashboard-contacts {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.contacts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-right: 24px;
+}
+
+.contacts-header h3 {
+  font-size: 1.5em;
+  color: #2762b9;
+  margin: 0;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.contacts-header .add-contact-button {
+  margin-left: auto;
+  padding: 11px 16px;
+  font-size: 0.9em;
+  background-color: #2762b9;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.contact-display {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.contact-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+}
+
+.contact-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.contact-info {
+  flex: 1;
+}
+
+.contact-info h4 {
+  margin: 0 0 8px;
+  font-size: 1.2em;
+  color: #2762b9;
+}
+
+.contact-info p {
+  text-align: left;
+}
+
+.delete-button {
+  margin-top: 0 auto;
+  padding: 6px 12px;
+  font-size: 0.8em;
+  background-color: #f36e70;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  align-self: center;
+}
+
+.delete-button:hover {
+  background-color: #bf5b60;
+}
 
 html, body, #root {
   margin: 0;

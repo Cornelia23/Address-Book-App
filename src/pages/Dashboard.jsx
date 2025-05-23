@@ -33,6 +33,8 @@ function Dashboard() {
     const [filterTag, setFilterTag] = useState('');
     const [sortBy, setSortBy] = useState('newest');
     const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+
 
 
 
@@ -106,7 +108,7 @@ function Dashboard() {
         };
 
         try {
-            if (editContactID) {
+            if (editContactID != null) {
                 const docRef = doc(db, 'contacts', editContactID);
                 await updateDoc(docRef, newContact);
 
@@ -161,7 +163,14 @@ function Dashboard() {
             const zipMatch = filterZip === '' || contact.address.zip === filterZip;
             const tagMatch = filterTag === '' || contact.tags?.toLowerCase().split(',').map(t => t.trim()).includes(filterTag);
             const favoriteMatch = !showFavoritesOnly || contact.favorite;
-            return zipMatch && tagMatch && favoriteMatch;
+
+            const search = searchTerm.toLowerCase();
+            const searchMatch =
+              contact.name.toLowerCase().includes(search) ||
+              contact.email.toLowerCase().includes(search) ||
+              (contact.tags && contact.tags.toLowerCase().includes(search));
+
+            return zipMatch && tagMatch && favoriteMatch && searchMatch;
         })
         .sort((a, b) => {
             if (a.favorite && !b.favorite) return -1;
@@ -245,12 +254,33 @@ function Dashboard() {
                 <div className="dashboard-contacts">
                     <div className="contacts-header">
                         <h3>Your Contacts</h3>
-                        <button className="add-contact-button" onClick={() => setShowForm(true)}>
+                        <button className="add-contact-button" onClick={() => {
+                                setEditContactID(null); 
+                                setName('');
+                                setPhone('');
+                                setEmail('');
+                                setTags('');
+                                setPhotoURL('');
+                                setStreet('');
+                                setCity('');
+                                setState('');
+                                setZip('');
+                                setShowForm(true); 
+                            }}
+                            >
                             Add Contact
                         </button>
                     </div>
+                    <div className="search-bar">
+                        <input
+                            type="text"
+                            placeholder="Search contacts"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
                     {showForm && (
-                        <div className="add-contact-overlay" onClick={() => setShowForm(false)}>
+                        <div className="add-contact-overlay" onClick={() => {setShowForm(false); setEditContactID(null)}}>
                             <div className="add-contact-content" onClick={(e) => e.stopPropagation()}>
                                 <h2>
                                     {editContactID ? 'Edit Contact' : 'Add Contact'}

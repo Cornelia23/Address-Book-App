@@ -32,6 +32,7 @@ function Dashboard() {
     const [filterZip, setFilterZip] = useState('');
     const [filterTag, setFilterTag] = useState('');
     const [sortBy, setSortBy] = useState('newest');
+    const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
 
 
@@ -100,7 +101,8 @@ function Dashboard() {
             photoURL,
             address: {street, city, state, zip,},
             userID: currentUser.uid,
-            createdAt: Date.now()
+            createdAt: Date.now(),
+            favorite: editContactID ? contacts.find(c => c.id === editContactID)?.favorite || false : false
         };
 
         try {
@@ -158,15 +160,33 @@ function Dashboard() {
     const filteredContacts = contacts.filter((contact) => {
             const zipMatch = filterZip === '' || contact.address.zip === filterZip;
             const tagMatch = filterTag === '' || contact.tags?.toLowerCase().split(',').map(t => t.trim()).includes(filterTag);
-            return zipMatch && tagMatch;
+            const favoriteMatch = !showFavoritesOnly || contact.favorite;
+            return zipMatch && tagMatch && favoriteMatch;
         })
         .sort((a, b) => {
+            if (a.favorite && !b.favorite) return -1;
+            if (!a.favorite && b.favorite) return 1;
+
             if (sortBy === 'newest') return b.createdAt - a.createdAt;
             if (sortBy === 'oldest') return a.createdAt - b.createdAt;
             if (sortBy === 'a-z') return a.name.localeCompare(b.name);
             if (sortBy === 'z-a') return b.name.localeCompare(a.name);
             return 0;
     });
+
+
+    const toggleFavorite = async (contact) => {
+        try {
+            const updated = { ...contact, favorite: !contact.favorite };
+            await updateDoc(doc(db, 'contacts', contact.id), { favorite: updated.favorite });
+        
+            setContacts(prev =>
+              prev.map(c => (c.id === contact.id ? { ...c, favorite: updated.favorite } : c))
+            );
+          } catch (err) {
+            console.error("Error toggling favorite:", err.message);
+          }
+    };
 
       
 
@@ -180,34 +200,45 @@ function Dashboard() {
         <div className="dashboard-container">
             <div className="dashboard-main">
                 <div className="dashboard-filters">
-                <div className="filter-group">
-                    <label>Filter by Tag:</label>
-                    <select value={filterTag} onChange={(e) => setFilterTag(e.target.value)}>
-                        <option value="">All</option>
-                        {uniqueTags.map((tag, idx) => (
-                        <option key={idx} value={tag}>{tag}</option>
-                        ))}
-                    </select>
+                    <div className="filter-group">
+                        <label>Filter by Tag:</label>
+                        <select value={filterTag} onChange={(e) => setFilterTag(e.target.value)}>
+                            <option value="">All</option>
+                            {uniqueTags.map((tag, idx) => (
+                            <option key={idx} value={tag}>{tag}</option>
+                            ))}
+                        </select>
                     </div>
 
                     <div className="filter-group">
-                    <label>Filter by ZIP / Area Code:</label>
-                    <select value={filterZip} onChange={(e) => setFilterZip(e.target.value)}>
-                        <option value="">All</option>
-                        {uniqueZips.map((zip, idx) => (
-                        <option key={idx} value={zip}>{zip}</option>
-                        ))}
-                    </select>
+                        <label>Filter by ZIP / Area Code:</label>
+                        <select value={filterZip} onChange={(e) => setFilterZip(e.target.value)}>
+                            <option value="">All</option>
+                            {uniqueZips.map((zip, idx) => (
+                            <option key={idx} value={zip}>{zip}</option>
+                            ))}
+                        </select>
                     </div>
 
                     <div className="filter-group">
-                    <label>Sort Contacts:</label>
-                    <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                        <option value="newest">Date Added: Newest First</option>
-                        <option value="oldest">Date Added: Oldest First</option>
-                        <option value="a-z">Alphabetical: A → Z</option>
-                        <option value="z-a">Alphabetical: Z → A</option>
-                    </select>
+                        <label>Sort Contacts:</label>
+                        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                            <option value="newest">Date Added: Newest First</option>
+                            <option value="oldest">Date Added: Oldest First</option>
+                            <option value="a-z">Alphabetical: A → Z</option>
+                            <option value="z-a">Alphabetical: Z → A</option>
+                        </select>
+                    </div>
+
+                    <div className="filter-group">
+                        <label>
+                            <input
+                            type="checkbox"
+                            checked={showFavoritesOnly}
+                            onChange={() => setShowFavoritesOnly(prev => !prev)}
+                            />
+                            Show Favorites Only
+                        </label>
                     </div>
 
                 </div>
@@ -294,6 +325,9 @@ function Dashboard() {
                         <div className="contact-display">
                             {filteredContacts.map((contact) => (
                                 <div className="contact-card" key={contact.id}>
+                                    <button className="favorite-button" onClick={() => toggleFavorite(contact)}>
+                                        {contact.favorite ? '★' : '☆'}
+                                    </button>
                                     {contact.photoURL && (
                                         <img
                                             src={contact.photoURL}

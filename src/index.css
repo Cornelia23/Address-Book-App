@@ -435,6 +435,7 @@ button:focus-visible {
   flex-direction: column;
   align-items: center;
   text-align: center;
+  position: relative;
   gap: 12px;
   padding: 16px;
   background-color: #fff;
@@ -523,6 +524,25 @@ button:focus-visible {
   border: 1px solid #ccc;
   font-size: 0.9em;
 }
+
+/* Star Styling */
+
+.favorite-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 1.4em;
+  cursor: pointer;
+  color: gold;
+  z-index: 10;
+}
+
+.favorite-button:hover {
+  transform: scale(1.1);
+}
+
 
 
 

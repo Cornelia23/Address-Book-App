@@ -29,6 +29,10 @@ function Dashboard() {
     const [zip, setZip] = useState('');
     const [contacts, setContacts] = useState([]);
     const [editContactID, setEditContactID] = useState(null); 
+    const [filterZip, setFilterZip] = useState('');
+    const [filterTag, setFilterTag] = useState('');
+    const [sortBy, setSortBy] = useState('newest');
+
 
 
 
@@ -142,19 +146,70 @@ function Dashboard() {
             console.error('Deleting contact caused error: ', err.message);
         }
     }
+
+    const uniqueZips = [...new Set(
+        contacts.map(c => c.address.zip).filter(Boolean))
+    ];
+
+    const uniqueTags = [...new Set(
+        contacts.flatMap(c => c.tags?.split(',').map(t => t.trim().toLowerCase())).filter(Boolean)
+    )];
+
+    const filteredContacts = contacts.filter((contact) => {
+            const zipMatch = filterZip === '' || contact.address.zip === filterZip;
+            const tagMatch = filterTag === '' || contact.tags?.toLowerCase().split(',').map(t => t.trim()).includes(filterTag);
+            return zipMatch && tagMatch;
+        })
+        .sort((a, b) => {
+            if (sortBy === 'newest') return b.createdAt - a.createdAt;
+            if (sortBy === 'oldest') return a.createdAt - b.createdAt;
+            if (sortBy === 'a-z') return a.name.localeCompare(b.name);
+            if (sortBy === 'z-a') return b.name.localeCompare(a.name);
+            return 0;
+    });
+
       
 
     return (
         <>
         <div className="dashboard-header">
             <img src={addressBookIcon} alt="Address Book" className="logo-icon" />
-            <h1>Welcome {currentUser?.displayName}</h1>
+            <h1>Welcome {currentUser?.displayName ? currentUser.displayName : currentUser.email}</h1>
             <button onClick={handleLogout}>Log Out</button>
         </div>
         <div className="dashboard-container">
             <div className="dashboard-main">
                 <div className="dashboard-filters">
-                    {/* Dropdowns go here */}
+                <div className="filter-group">
+                    <label>Filter by Tag:</label>
+                    <select value={filterTag} onChange={(e) => setFilterTag(e.target.value)}>
+                        <option value="">All</option>
+                        {uniqueTags.map((tag, idx) => (
+                        <option key={idx} value={tag}>{tag}</option>
+                        ))}
+                    </select>
+                    </div>
+
+                    <div className="filter-group">
+                    <label>Filter by ZIP / Area Code:</label>
+                    <select value={filterZip} onChange={(e) => setFilterZip(e.target.value)}>
+                        <option value="">All</option>
+                        {uniqueZips.map((zip, idx) => (
+                        <option key={idx} value={zip}>{zip}</option>
+                        ))}
+                    </select>
+                    </div>
+
+                    <div className="filter-group">
+                    <label>Sort Contacts:</label>
+                    <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                        <option value="newest">Date Added: Newest First</option>
+                        <option value="oldest">Date Added: Oldest First</option>
+                        <option value="a-z">Alphabetical: A → Z</option>
+                        <option value="z-a">Alphabetical: Z → A</option>
+                    </select>
+                    </div>
+
                 </div>
                 <div className="dashboard-contacts">
                     <div className="contacts-header">
@@ -237,7 +292,7 @@ function Dashboard() {
                         )}
                     {contacts.length > 0 && (
                         <div className="contact-display">
-                            {contacts.map((contact, index) => (
+                            {filteredContacts.map((contact) => (
                                 <div className="contact-card" key={contact.id}>
                                     {contact.photoURL && (
                                         <img

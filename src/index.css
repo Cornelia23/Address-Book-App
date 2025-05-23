@@ -503,6 +503,29 @@ button:focus-visible {
 }
 
 
+/* Filter Styling */
+
+.filter-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-group label {
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #333;
+}
+
+.filter-group select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.9em;
+}
+
+
+
 html, body, #root {
   margin: 0;
   padding: 0 !important;

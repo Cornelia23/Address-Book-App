@@ -1,9 +1,17 @@
+/**
+ * Signup Component
+ * 
+ * This manages the functionality for the signup page.
+ * On this page, a user is able to:
+ *  -Signup using an email and password
+ *  -Navigate to the Login page if they already have an account
+ */
+
 import { useState } from 'react';
 import { auth } from '../firebase/config'; 
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-
 
 
 function Signup() {
@@ -26,6 +34,13 @@ function Signup() {
 
     const navigate = useNavigate();
 
+    /**
+     * handleSubmit
+     * 
+     * This function is called when the signin form is submitted. It calls preventDefault to stop a page
+     * reload, and then it uses the Firebase createUserWithEmailAndPassword function to make a new user. 
+     * Upon success, it navigates the user to the dashboard.
+     */
     const handleSubmit = async (e) => {
         e.preventDefault(); // stop the form from refreshing the page
       

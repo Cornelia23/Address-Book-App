@@ -1,3 +1,15 @@
+/**
+ * Login Component
+ * 
+ * This manages the functionality for the login page, which is the first page a user will see.
+ * On this page, a user is able to:
+ *  -Login using an email and password
+ *  -Login using Google
+ *  -Navigate to the Signin page if they don't already have an account
+ * 
+ * This uses a GoogleAuthProvider from Firebase to allow users to login through their Google accounts.
+ */
+
 import { useState } from 'react';
 import { auth } from '../firebase/config'; 
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -29,6 +41,13 @@ function Login() {
 
     const navigate = useNavigate();
 
+    /**
+     * handleSubmit
+     * 
+     * This function is called when the login form is submitted. It calls preventDefault to stop a page
+     * reload, and then it uses the Firebase signInWithEmailAndPassword function to sign the user in. 
+     * Upon success, it navigates the user to the dashboard.
+     */
     const handleSubmit = async (e) => {
         e.preventDefault(); // stop the form from refreshing the page
     
@@ -47,6 +66,13 @@ function Login() {
 
     const googleProvider = new GoogleAuthProvider();
 
+    /**
+     * handleGoogleSignIn
+     * 
+     * This function is called when the sign in with Google button is pressed. It calls the 
+     * signInWithPopup function on the googleProvider to allow the user to sign in with their
+     * Google account and upon success navigates the user to the dashboard page.
+     */
     const handleGoogleSignIn = async () => {
         try {
         await signInWithPopup(auth, googleProvider);

@@ -1,3 +1,11 @@
+/**
+ * AuthContext
+ * 
+ * This makes a React context to store the current user. It uses AuthProvider to wrap
+ * the app and to manage the Firebase auth state. It also exports the useAuth hook
+ * which allows any component to easily access the current user.
+ */
+
 import { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase/config';

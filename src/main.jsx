@@ -1,3 +1,9 @@
+/**
+ * Main 
+ * 
+ * This initializes the React app by rendering the <App /> component into the DOM.
+ */
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'

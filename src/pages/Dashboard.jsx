@@ -1,3 +1,25 @@
+/**
+ * Dashboard Component 
+ * 
+ * This manages the functionality for the dashboard page, which is shown after the user logs in / signs up.
+ * On this page, a user is able to:
+ *  -Logout
+ *  -Add a contact
+ *  -Edit or delete their existing contacts
+ *  -Search their contacts 
+ *  -Filter by tags and zip code and sort alphabetically or by date added
+ *  -Favorite a contact, which automatically pins it to the top of their list
+ *  -Toggle 'Show All Favorites' which only displays their favorite contacts
+ * 
+ * This project uses Firebase and Firestore to persist contact information across logins and has a responsive page
+ * layout with separate sections for the header, contacts, and filters.
+ * 
+ * The Dashboard component uses several hooks. The first is useState, which handles the form and UI. It also uses 
+ * useEffect, which fetches contacts, and useAuth, which accesses the current user. Finally, useNavigate is used
+ * to move between page components.
+ * 
+ */
+
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase/config'; 
 import { signOut } from 'firebase/auth';
@@ -11,13 +33,13 @@ import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
 
 
 
-
 function Dashboard() {
 
     const navigate = useNavigate();
     const {currentUser} = useAuth();
 
     const [showForm, setShowForm] = useState(false);
+
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
@@ -27,6 +49,7 @@ function Dashboard() {
     const [city, setCity] = useState('');
     const [state, setState] = useState('');
     const [zip, setZip] = useState('');
+
     const [contacts, setContacts] = useState([]);
     const [editContactID, setEditContactID] = useState(null); 
     const [filterZip, setFilterZip] = useState('');
@@ -34,9 +57,6 @@ function Dashboard() {
     const [sortBy, setSortBy] = useState('newest');
     const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-
-
-
 
 
     useEffect(() => {
@@ -67,7 +87,14 @@ function Dashboard() {
     }, [currentUser]);
 
 
-
+    /**
+     * handleLogout
+     * 
+     * This function is called when the user presses the 'Logout' button and uses the Firebase
+     * signOut function to sign out the current user and navigates to the login page (navigating to 
+     * dashboard first will automatically navigate to the login page since there is no longer a 
+     * current user and the dashboard page is protected.)
+     */
     const handleLogout = async () => {
         try {
             await signOut(auth);
@@ -78,6 +105,14 @@ function Dashboard() {
         }
     };
 
+
+    /**
+     * handleEdit
+     * 
+     * This function is called when the 'Edit' button is pressed on a contact and it pre-fills the form
+     * with the contact's current information so the user can easily edit whichever field they want without
+     * having to refill the entire form. It then shows the form at the end.
+     */
     const handleEdit = (contact) => {
         setEditContactID(contact.id);
         setName(contact.name);
@@ -92,6 +127,15 @@ function Dashboard() {
         setShowForm(true);
     }
 
+
+    /**
+     * handleSubmit
+     * 
+     * This function is called when the Edit or Add Contact forms are submitted. It calls preventDefault to stop a page
+     * reload, and then it creates a newContact with the fields from the form. If the form is in edit mode, it edits the
+     * contact in Firestore and in the local contact list. If the form is in add mode, it creates a new contact and adds
+     * it to the Firestore db and the local contact list. Finally, it clears and hides the form.
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
       
@@ -139,8 +183,16 @@ function Dashboard() {
         catch (err) {
             console.error('Adding contact caused error: ', err.message);
         }    
-      };
+    };
 
+
+    /**
+     * handleDelete
+     * 
+     * This function is called when the 'Delete' button is pressed on a contact card. It uses the Firestore
+     * deleteDoc function to remove the contact from Firestore, and it removes it from the local contact list
+     * as well.
+     */
     const handleDelete = async (id) => {
         try {
             await deleteDoc(doc(db, 'contacts', id));
@@ -151,14 +203,18 @@ function Dashboard() {
         }
     }
 
+    //Gets a list of all the unique Zip code values from the current contacts
     const uniqueZips = [...new Set(
         contacts.map(c => c.address.zip).filter(Boolean))
     ];
 
+    //Gets a list of all the unique tag values from the current contacts
     const uniqueTags = [...new Set(
         contacts.flatMap(c => c.tags?.split(',').map(t => t.trim().toLowerCase())).filter(Boolean)
     )];
 
+
+    //Creates a filtered list of contacts based on the selected dropdown options/favorite toggle
     const filteredContacts = contacts.filter((contact) => {
             const zipMatch = filterZip === '' || contact.address.zip === filterZip;
             const tagMatch = filterTag === '' || contact.tags?.toLowerCase().split(',').map(t => t.trim()).includes(filterTag);
@@ -184,6 +240,12 @@ function Dashboard() {
     });
 
 
+    /**
+     * toggleFavorite
+     * 
+     * This function is called when the favorite star is pressed on a contact card. It updates that contact
+     * locally and in Firestore so that its favorite field is set to the opposite of whatever it currently is
+     */
     const toggleFavorite = async (contact) => {
         try {
             const updated = { ...contact, favorite: !contact.favorite };
@@ -198,7 +260,16 @@ function Dashboard() {
     };
 
       
-
+    /**
+     * Dashboard component structure:
+     * - Header: logo, welcome message, logout button
+     * - Main section:
+     *   - Left column: filtering dropdowns
+     *   - Right column:
+     *     - 'Your Contacts', Add Contact button, and Search bar
+     *     - Add/Edit contact form
+     *     - Contact cards (with edit/delete/favorite buttons)
+     */
     return (
         <>
         <div className="dashboard-header">

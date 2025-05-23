@@ -7,7 +7,7 @@ import addressBookIcon from '../assets/address-book.png';
 import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { useEffect } from 'react';
-import { deleteDoc, doc } from 'firebase/firestore';
+import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
 
 
 
@@ -28,6 +28,8 @@ function Dashboard() {
     const [state, setState] = useState('');
     const [zip, setZip] = useState('');
     const [contacts, setContacts] = useState([]);
+    const [editContactID, setEditContactID] = useState(null); 
+
 
 
     useEffect(() => {
@@ -69,6 +71,20 @@ function Dashboard() {
         }
     };
 
+    const handleEdit = (contact) => {
+        setEditContactID(contact.id);
+        setName(contact.name);
+        setEmail(contact.email);
+        setPhone(contact.phone);
+        setTags(contact.tags);
+        setPhotoURL(contact.photoURL);
+        setStreet(contact.address.street);
+        setCity(contact.address.city);
+        setState(contact.address.state);
+        setZip(contact.address.zip);
+        setShowForm(true);
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
       
@@ -84,10 +100,19 @@ function Dashboard() {
         };
 
         try {
-            await addDoc(collection(db, 'contacts'), newContact);
+            if (editContactID) {
+                const docRef = doc(db, 'contacts', editContactID);
+                await updateDoc(docRef, newContact);
 
-            // Add to contact list
-            setContacts((prev) => [...prev, newContact]);
+                setContacts((prev) => prev.map((c) => (c.id === editContactID ? {...newContact, id: editContactID} : c)));
+            }
+            else {
+                await addDoc(collection(db, 'contacts'), newContact);
+
+                // Add to contact list
+                setContacts((prev) => [...prev, newContact]);
+            }
+
 
             // Clear form
             setName('');
@@ -141,7 +166,9 @@ function Dashboard() {
                     {showForm && (
                         <div className="add-contact-overlay" onClick={() => setShowForm(false)}>
                             <div className="add-contact-content" onClick={(e) => e.stopPropagation()}>
-                                <h2>Add Contact</h2>
+                                <h2>
+                                    {editContactID ? 'Edit Contact' : 'Add Contact'}
+                                </h2>
                                 <form onSubmit={handleSubmit}>
                                     <input
                                     type="text"
@@ -201,7 +228,9 @@ function Dashboard() {
                                     value={photoURL}
                                     onChange={(e) => setPhotoURL(e.target.value)}
                                     />
-                                    <button type="submit">Save Contact</button>
+                                    <button type="submit">
+                                        {editContactID ? 'Save Changes' : 'Add Contact'}
+                                    </button>
                                 </form>
                             </div>
                         </div>
@@ -227,11 +256,18 @@ function Dashboard() {
                                             {contact.address.street}, {contact.address.city}, {contact.address.state} {contact.address.zip}
                                         </p>
                                     </div>
-                                    <button className="delete-button"
-                                        onClick={() => handleDelete(contact.id)}
-                                        >
-                                        Delete
-                                    </button>
+                                    <div className="form-types">
+                                        <button className="delete-button"
+                                            onClick={() => handleDelete(contact.id)}
+                                            >
+                                            Delete
+                                        </button>
+                                        <button className="edit-button"
+                                            onClick={() => handleEdit(contact)}
+                                            >
+                                            Edit 
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
